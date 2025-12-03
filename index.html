@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    
+    <!-- Meta tags Anti-Cache (Força atualização do PWA) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <!-- Configurações PWA iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="GMD Chat" />
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#050505" />
+    
+    <!-- Manifesto -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Ícones -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/yFt5CZpK/AZq2-YHs-P-e-ER3okh-Kgbg-AZq2-YHsej-SMQe-If-Wn-CBQ.png" />
+    <link rel="apple-touch-icon" href="https://i.ibb.co/yFt5CZpK/AZq2-YHs-P-e-ER3okh-Kgbg-AZq2-YHsej-SMQe-If-Wn-CBQ.png" />
+    
+    <title>GMD Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      
+      :root {
+        --sat: env(safe-area-inset-top);
+        --sab: env(safe-area-inset-bottom);
+        --sal: env(safe-area-inset-left);
+        --sar: env(safe-area-inset-right);
+      }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden; /* Trava a rolagem do corpo para gerenciar via React */
+        font-family: 'Inter', sans-serif;
+        overscroll-behavior-y: none; /* Previne o efeito elástico no topo/fundo */
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        background-color: #050505;
+      }
+      
+      /* Modo Escuro Padrão */
+      body {
+          background-color: #f3f4f6; /* Cinza claro para modo light */
+          color: #111827;
+      }
+      
+      html.dark body {
+          background-color: #050505; /* Preto GMD para modo dark */
+          color: white;
+      }
+
+      #root {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      /* Utilitário para esconder barra de rolagem mas manter funcionalidade */
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
+
+      /* Custom Scrollbar Fina e Transparente */
+      .custom-scrollbar {
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+      }
+      html.dark .custom-scrollbar {
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px; /* Bem fina */
+        height: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent; 
+      }
+      
+      /* Thumb Light Mode */
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2); 
+        border-radius: 10px;
+      }
+      /* Thumb Dark Mode */
+      html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(234, 179, 8, 0.6); /* Dourado ao passar o mouse */
+      }
+      
+      /* Ajustes para Inputs no iOS para evitar zoom */
+      input, textarea, select {
+        font-size: 16px !important;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        darkMode: 'class', // Ativa controle manual de tema
+        theme: {
+          extend: {
+            colors: {
+              gmd: {
+                dark: '#050505',
+                card: '#0f0f0f',
+                input: '#121212',
+                gold: '#fbbf24',
+                orange: '#ea580c',
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-out',
+              'float': 'float 6s ease-in-out infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'spin-slow': 'spin 3s linear infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              }
+            },
+            spacing: {
+              'safe-top': 'env(safe-area-inset-top)',
+              'safe-bottom': 'env(safe-area-inset-bottom)',
+              'safe-left': 'env(safe-area-inset-left)',
+              'safe-right': 'env(safe-area-inset-right)',
+            }
+          }
+        }
+      }
+    </script>
+    <script>
+      // Registro do Service Worker Otimizado
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registrado com sucesso:', registration.scope);
+              
+              // Verifica se há atualização
+              registration.onupdatefound = () => {
+                const installingWorker = registration.installing;
+                installingWorker.onstatechange = () => {
+                  if (installingWorker.state === 'installed') {
+                    if (navigator.serviceWorker.controller) {
+                      // Nova atualização disponível - força reload se necessário ou avisa usuário
+                      console.log('Nova versão disponível. Atualizando...');
+                    }
+                  }
+                };
+              };
+            })
+            .catch(err => {
+              // Silencia erros de origem cruzada comuns em ambientes de preview (AI Studio)
+              if (err.message && err.message.includes('origin')) {
+                console.warn('SW: Push Notifications desativadas no modo Preview (Origem Cruzada). Isso funcionará na Vercel.');
+              } else {
+                console.log('Falha ao registrar SW:', err);
+              }
+            });
+        });
+
+        // Recarrega a página se o controller mudar (SW atualizado)
+        let refreshing;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            window.location.reload();
+            refreshing = true;
+        });
+      }
+
+      // Bloqueio de Botão Direito
+      document.addEventListener('contextmenu', event => event.preventDefault());
+
+      // Bloqueio de Atalhos de Teclado
+      document.onkeydown = function(e) {
+        if(e.keyCode == 123) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2",
+    "firebase/app": "https://esm.sh/firebase@10.8.0/app",
+    "firebase/messaging": "https://esm.sh/firebase@10.8.0/messaging",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
+    "vite": "https://aistudiocdn.com/vite@^7.2.6"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

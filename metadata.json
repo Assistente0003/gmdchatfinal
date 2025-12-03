@@ -1,0 +1,7 @@
+{
+  "name": "GMD chat, assistentes prontos",
+  "description": "Aplicativo de chat profissional de alta performance com hierarquia de Promotores e Assistentes. Versão Gold 1.0.0.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
